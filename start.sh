@@ -30,15 +30,16 @@ if [ ! -z "$POCKETMINE_PLUGINS" ]; then
 	done
 fi
 
-# For each plugins folder, check if there is composer.json file
+# For each plugins folder, check if there is composer.json file depth 1
 # If there is, run `composer install` to install dependencies
 for PLUGINS_FOLDER in /plugins; do
-	if [ -d $PLUGINS_FOLDER ]; then
-		for PLUGIN in $(find $PLUGINS_FOLDER -name composer.json); do
-			PLUGIN_DIR=$(dirname $PLUGIN)
-			echo "Installing dependencies for $PLUGIN_DIR"
-			cd $PLUGIN_DIR
-			composer install
+	if [ -d "$PLUGINS_FOLDER" ]; then
+		for PLUGIN in $(find $PLUGINS_FOLDER -maxdepth 1 -mindepth 1 -type d); do
+			if [ -f "$PLUGIN/composer.json" ]; then
+				echo "Installing composer dependencies for $PLUGIN"
+				cd $PLUGIN
+				composer install
+			fi
 		done
 	fi
 done
