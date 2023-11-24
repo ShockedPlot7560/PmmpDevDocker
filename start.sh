@@ -30,6 +30,19 @@ if [ ! -z "$POCKETMINE_PLUGINS" ]; then
 	done
 fi
 
+# For each plugins folder, check if there is composer.json file
+# If there is, run `composer install` to install dependencies
+for PLUGINS_FOLDER in /plugins; do
+	if [ -d $PLUGINS_FOLDER ]; then
+		for PLUGIN in $(find $PLUGINS_FOLDER -name composer.json); do
+			PLUGIN_DIR=$(dirname $PLUGIN)
+			echo "Installing dependencies for $PLUGIN_DIR"
+			cd $PLUGIN_DIR
+			composer install
+		done
+	fi
+done
+
 # Run the server
 cd /pocketmine
 exec php PocketMine-MP.phar --no-wizard --enable-ansi --data=/data --plugins=/plugins --debug.level=10
